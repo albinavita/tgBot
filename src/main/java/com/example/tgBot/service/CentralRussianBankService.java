@@ -4,7 +4,6 @@ import com.example.tgBot.dto.GetCursOnDateXml;
 import com.example.tgBot.dto.GetCursOnDateXmlResponse;
 import com.example.tgBot.dto.ValuteCursOnDate;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -13,11 +12,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import org.springframework.ws.client.core.WebServiceTemplate;
 
 //Данный класс наследуется от WebServiceTemplate, который предоставляет удобный способ взаимодействия с SOAP веб сервисами
 public class CentralRussianBankService extends WebServiceTemplate {
-    //Тут случается некоторая магия Spring и в момент запуска вашего приложения, сюда поставляется значение из application.properties или application.yml
+    //Тут случается некоторая магия Spring и в момент запуска вашего приложения,
+    // сюда поставляется значение из application.properties или application.yml
     @Value("${cbr.api.url}")
     private String cbrApiUrl;
 
@@ -39,5 +38,9 @@ public class CentralRussianBankService extends WebServiceTemplate {
         final List<ValuteCursOnDate> courses = response.getGetCursOnDateXmlResult().getValuteData();
         courses.forEach(course -> course.setName(course.getName().trim()));
         return courses;
+    }
+
+    public ValuteCursOnDate getCourseForCurrency(String code) throws DatatypeConfigurationException {
+        return getCurrenciesFromCbr().stream().filter(currency -> code.equals(currency.getChCode())).findFirst().get();
     }
 }
